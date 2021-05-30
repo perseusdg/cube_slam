@@ -223,7 +223,7 @@ Frame::Frame(const cv::Mat &imGray, const double &timeStamp, ORBextractor *extra
         char frame_index_c[256];
         sprintf(frame_index_c, "%04d", (int)mnId); // format into 4 digit
         std::string pred_mask_img_name = base_data_folder + "/rcnn_labelmap_3dmatched/" + frame_index_c + "_maskmap.png";
-        objmask_img = cv::imread(pred_mask_img_name, CV_LOAD_IMAGE_UNCHANGED); // uint8  sometimes read image might take long time....
+        objmask_img = cv::imread(pred_mask_img_name, cv::IMREAD_UNCHANGED); // uint8  sometimes read image might take long time....
 
         KeysStatic = vector<bool>(mvKeys.size(), true); // all points are static now.
         keypoint_associate_objectID = vector<int>(mvKeys.size(), -1);

@@ -33,7 +33,8 @@
 #include "Eigen/Dense"
 #include <Eigen/Geometry>
 #include <opencv2/opencv.hpp>
-
+#include <opencv2/imgproc/types_c.h>
+using namespace cv;
 #include "unordered_map"
 
 class detect_3d_cuboid;

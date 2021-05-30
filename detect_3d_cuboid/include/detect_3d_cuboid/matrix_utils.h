@@ -3,6 +3,8 @@
 // Eigen
 #include <Eigen/Core>
 #include <Eigen/Dense>
+#include <numeric>
+#include <vector>
 
 template <class T>
 Eigen::Quaternion<T> zyx_euler_to_quat(const T &roll, const T &pitch, const T &yaw);

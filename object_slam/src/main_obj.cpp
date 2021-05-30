@@ -6,7 +6,8 @@
 #include <algorithm>
 
 #include <Eigen/Dense>
-#include <Eigen/Geometry> 
+#include <Eigen/Geometry>
+#include <opencv2/opencv.hpp>
 
 #include <ros/ros.h> 
 #include <ros/package.h>
@@ -125,7 +126,7 @@ visualization_msgs::MarkerArray cuboids_to_marker(object_landmark* obj_landmark,
     if (obj_landmark==nullptr)
 	return plane_markers;
 
-    marker.header.frame_id="/world";  marker.header.stamp=ros::Time::now();
+    marker.header.frame_id="world";  marker.header.stamp=ros::Time::now();
     marker.id = 0; //0
     marker.type = visualization_msgs::Marker::LINE_STRIP;   marker.action = visualization_msgs::Marker::ADD;
     marker.color.r = rgbcolor(0); marker.color.g = rgbcolor(1); marker.color.b = rgbcolor(2); marker.color.a = 1.0;
@@ -190,7 +191,7 @@ void publish_all_poses(std::vector<tracking_frame*> all_frames,std::vector<objec
     geometry_msgs::PoseArray all_pred_pose_array;    std::vector<nav_msgs::Odometry> all_pred_pose_odoms;
     geometry_msgs::PoseArray all_truth_pose_array;    std::vector<nav_msgs::Odometry> all_truth_pose_odoms;
     nav_msgs::Path path_truths,path_preds;
-    std_msgs::Header pose_header;    pose_header.frame_id = "/world";    pose_header.stamp = ros::Time::now();
+    std_msgs::Header pose_header;    pose_header.frame_id = "world";    pose_header.stamp = ros::Time::now();
     path_preds.header = pose_header;    path_truths.header = pose_header;    
     for (int i = 0; i < total_frame_number; i++)
     {
@@ -221,8 +222,8 @@ void publish_all_poses(std::vector<tracking_frame*> all_frames,std::vector<objec
 	    path_truths.poses.push_back(postamp);
 	}
     }
-    all_pred_pose_array.header.stamp=ros::Time::now();    all_pred_pose_array.header.frame_id="/world";
-    all_truth_pose_array.header.stamp=ros::Time::now();    all_truth_pose_array.header.frame_id="/world";
+    all_pred_pose_array.header.stamp=ros::Time::now();    all_pred_pose_array.header.frame_id="world";
+    all_truth_pose_array.header.stamp=ros::Time::now();    all_truth_pose_array.header.frame_id="world";
     
         
     if (save_results_to_txt)  // record cam pose and object pose
@@ -308,7 +309,7 @@ void publish_all_poses(std::vector<tracking_frame*> all_frames,std::vector<objec
 		if (frame_number%2==0) // show point cloud every N frames
 		{
 		    std::string raw_depth_img_name = base_folder+"depth_imgs/" + std::string(frame_index_c) + "_depth_raw.png";
-		    cv::Mat raw_depth_img = cv::imread(raw_depth_img_name, CV_LOAD_IMAGE_ANYDEPTH);
+		    cv::Mat raw_depth_img = cv::imread(raw_depth_img_name, cv::IMREAD_ANYDEPTH);
 		    raw_depth_img.convertTo(raw_depth_img, CV_32FC1, 1.0/depth_map_scaling,0);
 
 		    CloudXYZRGB::Ptr point_cloud(new CloudXYZRGB());
@@ -317,7 +318,7 @@ void publish_all_poses(std::vector<tracking_frame*> all_frames,std::vector<objec
 		    depth_to_cloud(raw_rgb_img, raw_depth_img, truth_pose_matrix, point_cloud, true); // need to downsample cloud, otherwise too many
 		    ros::Time curr_time=ros::Time::now();
 
-		    point_cloud->header.frame_id = "/world";
+		    point_cloud->header.frame_id = "world";
 		    point_cloud->header.stamp = (curr_time.toNSec() / 1000ull);
 		    raw_cloud_pub.publish(point_cloud);
 		}
