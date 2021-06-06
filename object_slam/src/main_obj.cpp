@@ -320,7 +320,7 @@ void publish_all_poses(std::vector<tracking_frame*> all_frames,std::vector<objec
 
 		    point_cloud->header.frame_id = "world";
 		    point_cloud->header.stamp = (curr_time.toNSec() / 1000ull);
-		    raw_cloud_pub.publish(point_cloud);
+		    raw_cloud_pub.publish(*point_cloud);
 		}
 	    
 	    cv_bridge::CvImage out_image;
