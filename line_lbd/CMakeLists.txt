@@ -48,7 +48,7 @@ include_directories(
 
 set(CMAKE_BUILD_TYPE Release)
 set(CMAKE_CXX_FLAGS
-   "${CMAKE_CXX_FLAGS} ${SSE_FLAGS} -march=native  -std=c++0x"
+   "${CMAKE_CXX_FLAGS} ${SSE_FLAGS} -march=native  -std=c++17"
 ) 
 
 ## Declare a C++ library

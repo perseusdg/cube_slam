@@ -13,33 +13,40 @@
 #include <opencv2/highgui.hpp>
 
 #include <iostream>
-#include <fstream>
 #include <ctime>
+#include <string>
+#include <sstream>
+#include <fstream>
+#include <filesystem>
+
 #include <line_lbd/line_lbd_allclass.h>
 
 #include <ros/ros.h>
 
 using namespace cv;
 using namespace std;
-
+namespace filesys = std::filesystem;
 
 int main( int argc, char** argv )
 {
       /* get parameters from comand line */
       if(argc<2){
-      std::cout<<"Provide an image name"<<endl;
+      std::cout<<"Provide an image path"<<endl;
       return -1;
       }
  
       ros::init(argc, argv, "detect lines");
       ros::NodeHandle nh; 
  
-      std::string image_path(argv[1]);
-            
-      cv::Mat raw_img = imread( image_path, 1 );
+      std::string images_file(argv[1]);
+      ifstream file(images_file);
+      std::string line;
+      while(getline(file,line)){
+      std::cout<<line<<std::endl;
+      cv::Mat raw_img = imread( line, 1 );
       if( raw_img.data == NULL )
       {
-      std::cout << "Error, image could not be loaded. Please, check its path \n"<<image_path << std::endl;
+      std::cout << "Error, image could not be loaded. Please, check its path \n"<<line << std::endl;
       return -1;
       }
       
@@ -48,10 +55,10 @@ int main( int argc, char** argv )
       bool use_LSD_algorithm;
       bool save_to_imgs;
       bool save_to_txts;
-      nh.param<std::string>("save_folder", save_folder, "$(find line_lbd)/data");
+      nh.param<std::string>("save_folder", save_folder, "$(find line_lbd)/data_ldb_kitti/");
       nh.param<bool>("use_LSD_algorithm",use_LSD_algorithm,true);
       nh.param<bool>("save_to_imgs",save_to_imgs,false);
-      nh.param<bool>("save_to_txts",save_to_txts,false);
+      nh.param<bool>("save_to_txts",save_to_txts,true);
       
             
       int numOfOctave_ = 1;
@@ -69,7 +76,7 @@ int main( int argc, char** argv )
       line_lbd_ptr->filter_lines(keylines_raw,keylines_out);  // remove short lines
       
       // show image
-      if( raw_img.channels() == 1 )
+      /*if( raw_img.channels() == 1 )
         cvtColor( raw_img, raw_img, COLOR_GRAY2BGR );
       cv::Mat raw_img_cp;
       drawKeylines(raw_img, keylines_out, raw_img_cp, cv::Scalar( 0, 150, 0 ),2); // B G R
@@ -80,11 +87,14 @@ int main( int argc, char** argv )
       {
         std::string img_save_name = save_folder+"saved_edges.jpg";
         cv::imwrite(img_save_name,raw_img_cp);
-      }
+      }*/
       
       if (save_to_txts)
       {
-        std::string txt_save_name = save_folder+"saved_edges.txt";
+        filesys::path path(line);
+        std::string fileName = path.stem().string();
+        std::string txt_save_name = save_folder+fileName+".txt";
+        std::cout<<txt_save_name<<std::endl;
         ofstream resultsFile;
         resultsFile.open(txt_save_name);
         for (int j=0;j<keylines_out.size();j++)
@@ -94,5 +104,8 @@ int main( int argc, char** argv )
         }
         resultsFile.close();
       }
+      }
+            
+      
   
 }
